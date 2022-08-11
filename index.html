@@ -16,8 +16,11 @@
                 padding: 30px;
                 font-size: 2em;
             }
+            .price {
+                display: flex;
+            }
             p {
-                font-size: 3em;
+                font-size: 2em;
                 margin-left: 25px;
             }
         </style>
@@ -25,33 +28,44 @@
     <body>
         <input type='number' min="12" max="10000" value="12">
         <div class="price">
-            <p>unit price: <span></span></p>
+            <p>unit price: <span class="unitprice"></span></p>
+            <p>total price:<span class="totalprice"></span></p>
         </div>
         <script>
             let unitPrice = 15;
-            let priceText = document.querySelector('span');
+            let priceText = document.querySelector('span.unitprice');
             let quantity = document.querySelector('input');
+            let totalPrice = document.querySelector('span.totalprice');
 
             priceText.textContent += unitPrice;
 
             quantity.addEventListener('change', updatePrice);
-            
+           
+            //calculate the discounted price and format to CAD
             function calculatePrice(percentOff) {
                 let discount = unitPrice * percentOff;
                 discountPrice = unitPrice - discount;
-                
-                console.log(discountPrice, discount);
+                priceText.textContent = new Intl.NumberFormat('en-IN', {style: 'currency', currency: 'CAD'}).format(discountPrice);
+                totalPrice.textContent = new Intl.NumberFormat('en-IN', {style: 'currency', currency: 'CAD'}).format(quantity.value * discountPrice);
             }
 
+            const gildan5000 = {
+                productName: 'Heavy Cotton T-Shirt',
+                t1: 0.95,
+                t2: 0.45,
+                t3: 0.3
+            };
+
             function updatePrice() {
-                if (quantity.value > 50) {
-                    calculatePrice(0.4);
-                    priceText.textContent = discountPrice;
-                } else if (quantity.value > 100) {
-                    calculatePrice(0.5);
-                    priceText.textContent = discountPrice;
-                } else {
-                    priceText.textContent = 15;
+                if (quantity.value > 100) {
+                    calculatePrice(gildan5000.t1);
+                } else if (quantity.value > 50) {
+                    calculatePrice(gildan5000.t2);
+                } else if (quantity.value > 25) {
+                    calculatePrice(gildan5000.t3)
+                }   else {
+                    priceText.textContent = new Intl.NumberFormat('en-IN', {style: 'currency', currency: 'CAD'}).format(unitPrice);
+                    totalPrice.textContent = new Intl.NumberFormat('en-IN', {style: 'currency', currency: 'CAD'}).format(unitPrice * quantity.value);
                 }
             }
         </script>
